@@ -1,14 +1,15 @@
 from pyspark.sql.functions import regexp_extract, col, to_timestamp, trim, substring, regexp_replace
 from abc import ABC, abstractmethod
-from pyspark.sql import SparkSession
 import findspark
 
 findspark.init()
 
 class DataTransformer(ABC):
     @abstractmethod
-    def transform(self, df_film, df_inventory, df_rental, df_customer, df_store):
+    def transform(self, *dfs):
         
+        df_film, df_inventory, df_rental, df_customer, df_store = dfs
+
         df_film = df_film.drop('original_language_id')
 
         return df_film, df_inventory, df_rental, df_customer, df_store
@@ -17,9 +18,9 @@ class DataTransformer(ABC):
 
 class Transformer(DataTransformer):
 
-    def transform(self, df_film, df_inventory, df_rental, df_customer, df_store):
+    def transform(self, *dfs):
 
-        df_film, df_inventory, df_rental, df_customer, df_store = super().transform(df_film, df_inventory, df_rental, df_customer, df_store)
+        df_film, df_inventory, df_rental, df_customer, df_store = super().transform(dfs)
 
         cols_n = ["film_id",
         "release_year",
@@ -47,13 +48,12 @@ class Transformer(DataTransformer):
                 df_film = df_film.withColumn(c, regexp_extract(c, "\d{1,}\.{0,}\d{0,}", 0)).withColumn(c, col(c).cast("double"))
 
             for c in cols_s:
-                if c == "description":
-                    df_film = df_film.withColumn(c, trim(c))
-                    df_film = df_film.withColumn(c, substring(c, 3, 1000))
-                else:
-                    df_film = df_film.withColumn(c, trim(c))
+                
+                df_film = df_film.withColumn(c, trim(c))
+                
 
             df_film = df_film.withColumn("last_update", trim("last_update")).withColumn("last_update", to_timestamp("last_update", "yyyy-MM-dd HH:mm:ss"))
+            df_film = df_film.withColumn("description", substring("description", 3, 1000))
 
             df_film = df_film.drop_duplicates()
 
