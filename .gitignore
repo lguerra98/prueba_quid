@@ -1,4 +1,3 @@
 .venv
 .ipynb_checkpoints
 data/database.db
-src/__pycache__
