@@ -20,7 +20,7 @@ class Transformer(DataTransformer):
 
     def transform(self, *dfs):
 
-        df_film, df_inventory, df_rental, df_customer, df_store = super().transform(dfs)
+        df_film, df_inventory, df_rental, df_customer, df_store = super().transform(*dfs)
 
         cols_n = ["film_id",
         "release_year",
