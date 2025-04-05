@@ -20,7 +20,7 @@ class Transformer(DataTransformer):
 
     def transform(self, *dfs):
 
-        df_film, df_inventory, df_rental, df_customer, df_store = super().transform(dfs)
+        df_film, df_inventory, df_rental, df_customer, df_store = super().transform(*dfs)
 
         cols_n = ["film_id",
         "release_year",
@@ -99,7 +99,7 @@ class Transformer(DataTransformer):
 
             df_customer = df_customer.withColumn(c, trim(c)).withColumn(c, to_timestamp(c, "yyyy-MM-dd HH:mm:ss"))
 
-        val = val = df_customer.groupBy("segment").count().orderBy(col("count").desc()).filter("segment != 'NULL'").orderBy(col("count").desc()).limit(1).collect()[0]["segment"]
+        val = df_customer.groupBy("segment").count().orderBy(col("count").desc()).filter("segment != 'NULL'").orderBy(col("count").desc()).limit(1).collect()[0]["segment"]
 
         df_customer = df_customer.withColumn("segment", regexp_replace("segment", "NULL", val))
         df_customer = df_customer.withColumn("customer_id_old", regexp_replace("customer_id_old", "NULL", "Not Aplicable"))
