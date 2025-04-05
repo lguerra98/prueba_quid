@@ -52,11 +52,11 @@ class Transformer(DataTransformer):
                 df_film = df_film.withColumn(c, trim(c))
                 
 
-            df_film = df_film.withColumn("last_update", trim("last_update")).withColumn("last_update", to_timestamp("last_update", "yyyy-MM-dd HH:mm:ss"))
-            df_film = df_film.withColumn("description", substring("description", 3, 1000))
 
-            df_film = df_film.drop_duplicates()
+        df_film = df_film.drop_duplicates()
 
+        df_film = df_film.withColumn("last_update", trim("last_update")).withColumn("last_update", to_timestamp("last_update", "yyyy-MM-dd HH:mm:ss"))
+        df_film = df_film.withColumn("description", substring("description", 3, 1000))
         
         df_inventory = df_inventory.withColumn("store_id", regexp_extract("store_id", "\d{0,}", 0)).withColumn("store_id", col("store_id").cast("int"))
 
